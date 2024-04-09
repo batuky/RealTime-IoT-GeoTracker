@@ -2,8 +2,9 @@ from fastapi import APIRouter, HTTPException, Path, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import SessionLocal
-from app import models, schemas
+from app import schemas
 from app.crud import create_device, get_devices, delete_device
+from app import models
 
 router = APIRouter(prefix="/devices", tags=["devices"])
 

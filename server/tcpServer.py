@@ -1,6 +1,7 @@
 import socket
 import threading
 import re
+from queue_manager import QueueManager
 
 class TCPServer:
     # TCP Server Settings
@@ -16,7 +17,8 @@ class TCPServer:
 
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+        self.queue_manager = QueueManager()
+    
     def is_valid_message(self, message):
         """Validate the format of the incoming message."""
         return self.MESSAGE_PATTERN.fullmatch(message) is not None
@@ -33,6 +35,7 @@ class TCPServer:
                     message = data.decode()
                     if self.is_valid_message(message):
                         print(f"Valid data received: {message}")
+                        self.queue_manager.send_message(message)
                     else:
                         print(f"Invalid data: {message}")
             except ConnectionResetError:

@@ -2,8 +2,9 @@ from fastapi import APIRouter, HTTPException, Path, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import SessionLocal
-from app import models, schemas, exceptions
-from app.crud import get_locations_for_device  # Assuming that this function is implemented in the crud module
+from app import exceptions, models
+from app.crud import get_locations_for_device
+from app import schemas  # Assuming that this function is implemented in the crud module
 
 router = APIRouter(prefix="/locations", tags=["locations"])
 
