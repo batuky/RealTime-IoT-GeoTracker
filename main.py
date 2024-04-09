@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.database import init_db
+from app.database import init_db, close_db
 from app.routers import device, location
 
 app = FastAPI()
@@ -13,4 +13,4 @@ async def startup_event():
 
 @app.router.on_event("shutdown")
 async def shutdown_event():
-    pass
+    close_db()
