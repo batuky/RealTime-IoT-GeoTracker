@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
-# Device modeli için Pydantic schema
 class DeviceBase(BaseModel):
     name: str
 
@@ -16,7 +15,7 @@ class Device(DeviceBase):
     class Config:
         from_attributes = True
 
-# Location modeli için Pydantic schema
+
 class LocationBase(BaseModel):
     latitude: float
     longitude: float
@@ -32,5 +31,4 @@ class Location(LocationBase):
     class Config:
         from_attributes = True
 
-# Pydantic modellerinde forward declaration kullanımı
 Device.model_rebuild()
