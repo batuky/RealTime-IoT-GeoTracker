@@ -1,16 +1,14 @@
 from fastapi import FastAPI
 from app.database import init_db, close_db
-from app.routers import device, location
+from app.api import routes
+from contextlib import asynccontextmanager
 
-app = FastAPI()
-
-app.include_router(device.router)
-app.include_router(location.router)
-
-@app.router.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     init_db()
-
-@app.router.on_event("shutdown")
-async def shutdown_event():
+    yield
     close_db()
+
+app = FastAPI(lifespan=lifespan)
+
+app.include_router(routes.router)

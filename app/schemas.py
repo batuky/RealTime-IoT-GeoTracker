@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 
-# Cihaz Schemaları
+# Device modeli için Pydantic schema
 class DeviceBase(BaseModel):
     name: str
 
@@ -11,22 +11,26 @@ class DeviceCreate(DeviceBase):
 
 class Device(DeviceBase):
     id: int
+    locations: List['Location'] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-# Konum Schemaları
+# Location modeli için Pydantic schema
 class LocationBase(BaseModel):
     latitude: float
     longitude: float
-    timestamp: Optional[datetime] = None
+    timestamp: datetime
 
 class LocationCreate(LocationBase):
-    pass
+    device_id: int
 
 class Location(LocationBase):
     id: int
     device_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+# Pydantic modellerinde forward declaration kullanımı
+Device.model_rebuild()

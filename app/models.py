@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -9,7 +9,7 @@ class Device(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True)
-    # Diğer cihaz özellikleri buraya eklenebilir.
+    locations = relationship("Location", back_populates="device")
 
 class Location(Base):
     __tablename__ = "locations"
@@ -18,7 +18,6 @@ class Location(Base):
     device_id = Column(Integer, ForeignKey('devices.id'))
     latitude = Column(Float)
     longitude = Column(Float)
-    timestamp = Column(DateTime)
-    # Diğer konum özellikleri buraya eklenebilir.
+    timestamp = Column(DateTime, default=func.now())
 
-    device = relationship("Device")
+    device = relationship("Device", back_populates="locations")
