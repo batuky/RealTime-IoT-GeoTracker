@@ -17,7 +17,8 @@ class TCPServer:
 
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.queue_manager = QueueManager()
+        rabbitmq_url = r'amqp://guest:guest@127.0.0.1:5672/%2F'
+        self.queue_manager = QueueManager(rabbitmq_url)
     
     def is_valid_message(self, message):
         """Validate the format of the incoming message."""

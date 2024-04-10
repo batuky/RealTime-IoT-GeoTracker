@@ -1,7 +1,7 @@
 import logging
-from fastapi import FastAPI
-from app.database import init_db, close_db
-from app.api import routes
+from fastapi import FastAPI, Request
+from .content.database import init_db, close_db
+from .content.api import routes
 from contextlib import asynccontextmanager
 
 
@@ -17,6 +17,14 @@ async def lifespan(app: FastAPI):
     logger.info("Application is closing...")
 
 app = FastAPI(lifespan=lifespan)
+
+# @app.middleware("http")
+async def log_requests(request: Request, call_next):
+    body = await request.body() 
+    logger.info(f"Request: {body}")
+    response = await call_next(request)
+    logger.info(f"Response status: {response.status_code}")
+    return response
 
 app.include_router(routes.router)
 

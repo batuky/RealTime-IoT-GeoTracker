@@ -15,9 +15,9 @@ class Location(Base):
     __tablename__ = "locations"
     
     id = Column(Integer, primary_key=True, index=True)
-    device_id = Column(Integer, ForeignKey('devices.id'))
+    device_id = Column(Integer, ForeignKey('devices.id'), nullable=False)
     latitude = Column(Float)
     longitude = Column(Float)
-    timestamp = Column(DateTime, default=func.now())
+    time = Column(DateTime, default=func.now())
 
     device = relationship("Device", back_populates="locations")

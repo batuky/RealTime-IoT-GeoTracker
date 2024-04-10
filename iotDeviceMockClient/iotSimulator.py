@@ -5,7 +5,7 @@ import socket
 
 class IoTDeviceSimulator:
     # Constants
-    DEVICE_COUNT = 20
+    DEVICE_COUNT = 1
     MIN_LATITUDE = -90.0
     MAX_LATITUDE = 90.0
     MIN_LONGITUDE = -180.0

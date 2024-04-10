@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+from typing import Optional, List
+from sqlalchemy import func, desc
 from .. import models, schemas
 
 def create_device(db: Session, device: schemas.DeviceCreate):
@@ -7,6 +9,7 @@ def create_device(db: Session, device: schemas.DeviceCreate):
     db.commit()
     db.refresh(db_device)
     return db_device
+
 
 def get_device(db: Session, device_id: int):
     return db.query(models.Device).filter(models.Device.id == device_id).first()

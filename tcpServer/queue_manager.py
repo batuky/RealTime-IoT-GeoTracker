@@ -2,21 +2,20 @@ import pika
 from pika.exceptions import AMQPConnectionError, ChannelError
 
 class QueueManager:
-    def __init__(self, host='localhost', queue_name='iot_location_queue'):
-        self.host = host
+    def __init__(self, rabbitmq_url, queue_name='iot_location_queue'):
         self.queue_name = queue_name
         self.connection = None
         self.channel = None
+        self.rabbitmq_url = rabbitmq_url
         self.connect()
 
     def connect(self):
         try:
-            self.connection = pika.BlockingConnection(
-                pika.ConnectionParameters(host=self.host)
-            )
+            self.params = pika.URLParameters(self.rabbitmq_url)
+            self.connection = pika.BlockingConnection(self.params)
             self.channel = self.connection.channel()
             self.channel.queue_declare(queue=self.queue_name)
-            print(f"Connected to RabbitMQ on {self.host}, declared queue '{self.queue_name}'")
+            print(f"Connected to RabbitMQ on {self.rabbitmq_url}, declared queue '{self.queue_name}'")
         except AMQPConnectionError as error:
             print(f"Failed to connect to RabbitMQ: {error}")
             self.channel = None
@@ -53,7 +52,9 @@ class QueueManager:
         print("RabbitMQ connection closed.")
 
 if __name__ == "__main__":
-    queue_manager = QueueManager()
+    rabbitmq_url = r'amqp://guest:guest@127.0.0.1:5672/%2F'
+    queue_manager = QueueManager(rabbitmq_url)
+
     try:
         queue_manager.send_message("Test Message")
     except Exception as e:

@@ -1,9 +1,9 @@
 import logging
-from typing import List
+from typing import List, Dict, Any
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from .. import models, schemas 
-from ..database import SessionLocal  # Veritabanı bağlantı fonksiyonunu içe aktar
+from ..database import SessionLocal
 
 
 logging.basicConfig(level=logging.INFO)
@@ -12,21 +12,50 @@ logger = logging.getLogger("uvicorn.info")
 router = APIRouter()
 
 def get_db():
-    db = SessionLocal()
+    
     try:
+        db = SessionLocal()
         yield db
+    except Exception as e:
+        print(e)
+    else:
+        print("success")    
     finally:
         db.close()
         logger.info("Database connection closed")
 
+
 @router.post("/iot_data/", response_model=schemas.Location)
-def create_iot_data(location_create: schemas.LocationCreate, db: Session = Depends(get_db)):
-    db_location = models.Location(**location_create.dict())
+def create_iot_data(location_create:schemas.LocationCreate, db: Session = Depends(get_db)):
+    # Extract the nested 'location' data
+    location_data = location_create.dict(by_alias=True)
+    nested_location = location_data.pop('location', {})  # Remove 'location' and get its value
+    print(location_data)
+    # Merge the nested 'location' data with the top-level data
+    flat_data = {**location_data, **nested_location}
+
+    # Now flat_data has a flat structure suitable for models.Location
+    db_location = models.Location(**flat_data)
+    print(db_location)
     db.add(db_location)
     db.commit()
     db.refresh(db_location)
     logger.info(f"New IoT data created with ID: {db_location.id}")
-    return db_location
+    location_response = {
+        'id': db_location.id,
+        'device_id': db_location.device_id,
+        # 'timestamp' field is expected, and it corresponds to the 'time' field in the ORM model
+        'time': db_location.time,
+        # The 'location' is directly taken from the nested LocationData instance
+        'location': {
+            'latitude': db_location.latitude,
+            'longitude': db_location.longitude,
+        },
+        # The 'time' field is not necessary here as it is an alias for 'timestamp' in the LocationBase schema
+    }
+    return schemas.LocationCreate(**location_response)
+
+
 
 @router.get("/iot_data/", response_model=List[schemas.Location])
 def read_all_iot_data(db: Session = Depends(get_db)):
