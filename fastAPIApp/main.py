@@ -18,13 +18,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# @app.middleware("http")
-async def log_requests(request: Request, call_next):
-    body = await request.body() 
-    logger.info(f"Request: {body}")
-    response = await call_next(request)
-    logger.info(f"Response status: {response.status_code}")
-    return response
 
 app.include_router(routes.router)
 

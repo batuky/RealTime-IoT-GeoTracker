@@ -10,7 +10,9 @@ TCP Server for Data Collection: Collects location data from IoT devices using TC
 Data Validation: Validates data on the server to ensure its integrity and consistency.
 Queue System: Uses a message queue before writing incoming data to the database.
 CRUD Operations via RESTful API: Performs crud operations on consumed data using RESTful API.
-Testing: Comes with examples of unit and integration tests to ensure the reliability of the service.
+
+
+Note: IOT device mock client, tcp server and queue consumer are working, but fastAPI is not working as intended. Problem: The data coming to FastAPI and the data in the return value do not match.
 
 ## Getting Started
 
@@ -30,11 +32,35 @@ Testing: Comes with examples of unit and integration tests to ensure the reliabi
 
 2. Navigate to the project directory.
 
-change file names.
-app - fastAPIApp
-iotDevice - iotDeviceMockClient
-server - TCPServer
-worker - queueConsumer
+   On different terminals
+   
+   - Navigate tcpServer directory ,and run the tcp server.
+   ```sh
+   cd .\tcpServer\
+   ```
+   ```sh
+   python .\tcpServer.py
+   ```
+   
+   - Navigate iotDeviceMockClient ,and run the iotSimulator
 
-sürekli port açmaması için 
+   ```sh
+   cd .\iotDeviceMockClient\
+   ```
+   ```sh
+   python .\iotSimulator.py
+   ```
+   
+   - Navigate main project directory ,and run FastAPI on main directory
+   ```sh
+   uvicorn fastAPIApp.main:app --reload
+   ```
+   
+   - Navigate queueConsumer ,and run the consumer
 
+   ```sh
+   cd .\queueConsumer\
+   ```
+   ```sh
+   python .\consumer.py
+   ```
