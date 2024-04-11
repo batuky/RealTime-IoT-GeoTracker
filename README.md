@@ -30,7 +30,10 @@ Note: IOT device mock client, tcp server and queue consumer are working, but fas
    git https://github.com/batuky/evreka-iot-gps.git
    ```
 
-2. Navigate to the project directory.
+2. Change postgresql db credentials on code.
+   evreka-iot-gps\fastAPIApp\content\database.py  SQLALCHEMY_DATABASE_URL.
+
+3. Navigate to the project directory.
 
    On different terminals
    
