@@ -6,7 +6,7 @@ import pika
 import time
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("worker_consumer")
+logger = logging.getLogger("consumer_logger")
 
 class RabbitMQConsumer:
     def __init__(self, queue_name, rabbitmq_url, fastapi_url):
@@ -21,68 +21,59 @@ class RabbitMQConsumer:
         response = requests.post(
             self.fastapi_url,
             json=json_data,
-            headers={
-                "Accept": "*/*",
-            }
+            headers={"Content-Type": "application/json"}
         )
+
+        print("sended data : ", response)
         logger.info(f"Data sent to FastAPI, response status: {response.status_code}")
-        print(f"Data sent to FastAPI, response status: {response.status_code}")
 
     def consume_message(self):
         self.channel.queue_declare(queue=self.queue_name)
-        
+
         logger.info("Consumer started, waiting for messages...")
-        print("Consumer started, waiting for messages...")
         while True:
             for method_frame, properties, body in self.channel.consume(self.queue_name, inactivity_timeout=1, auto_ack=False):
                 if method_frame:
                     try:
                         decoded_body = body.decode()
                         json_data = self.parse_message_to_json(decoded_body)
-                        print(json_data)
-                        logger.info(f"Received message: {decoded_body}")
-                        time.sleep(5)
-                        self.send_to_fastapi(json_data)
-                        self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
+                        if json_data:
+                            self.send_to_fastapi(json_data)
+                            self.channel.basic_ack(delivery_tag=method_frame.delivery_tag)
                     except json.JSONDecodeError as e:
                         logger.error(f"JSON decoding error: {e}")
+                    except Exception as e:
+                        logger.error(f"Error processing message: {e}")
                 else:
                     logger.info("No messages received. Consumer is idle...")
                     break
 
-            self.connection.close()
-
+        self.connection.close()
 
     def parse_message_to_json(self, message):
-        # Regular expression to match the desired pattern
-        pattern = r'Device (\d+) - Time: ([\d-]+\s[\d:]+), Location: \((-?\d+\.\d+),\s*(-?\d+\.\d+)\)'
-        
-        # Use regular expression to find the matching groups
-        match = re.match(pattern, message)
-        
+        pattern = re.compile(r'Device (\d+) - Time: ([\d-]+\s[\d:]+) - Latitude: (-?\d+\.\d+) - Longitude: (-?\d+\.\d+)')
+        match = pattern.match(message)
         if not match:
-            raise ValueError("Message format is incorrect")
+            logger.error("Message format is incorrect")
+            return None
         
-        # Extract the device id, time, and location from the message
-        device_id, time, latitude, longitude = match.groups()
-        
-        # Construct the dictionary
-        message_dict = {
-            "device_id": int(device_id),
+        device, time, latitude, longitude = match.groups()
+        try:
+            latitude = float(latitude)
+            longitude = float(longitude)
+        except ValueError as e:
+            logger.error(f"Error converting latitude or longitude to float: {e}")
+        return {
+            "device": device,
             "time": time,
-            "location": {
-                "latitude": float(latitude),
-                "longitude": float(longitude)
-            }
+            "latitude": latitude,
+            "longitude": longitude
         }
-        
-        # Convert the dictionary to a JSON string
-        return message_dict
 
 if __name__ == "__main__":
     queue_name = 'iot_location_queue'
-    rabbitmq_url = r'amqp://guest:guest@127.0.0.1:5672/%2F'
-    fastapi_url = 'http://127.0.0.1:8000/iot_data/'
+    rabbitmq_url = 'amqp://guest:guest@127.0.0.1:5672/%2F'
+    fastapi_url = 'http://127.0.0.1:8000/location-data/'
 
     consumer = RabbitMQConsumer(queue_name, rabbitmq_url, fastapi_url)
     consumer.consume_message()

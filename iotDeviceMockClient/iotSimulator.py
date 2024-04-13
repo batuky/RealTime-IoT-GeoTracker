@@ -5,13 +5,13 @@ import socket
 
 class IoTDeviceSimulator:
     # Constants
-    DEVICE_COUNT = 1
+    DEVICE_COUNT = 2
     MIN_LATITUDE = -90.0
     MAX_LATITUDE = 90.0
     MIN_LONGITUDE = -180.0
     MAX_LONGITUDE = 180.0
-    MIN_SLEEP_SECONDS = 1
-    MAX_SLEEP_SECONDS = 5
+    MIN_SLEEP_SECONDS = 3
+    MAX_SLEEP_SECONDS = 6
     TCP_IP = '127.0.0.1'
     TCP_PORT = 5005
 
@@ -29,7 +29,7 @@ class IoTDeviceSimulator:
         while True:
             latitude, longitude = self.generate_random_location()
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())
-            message = f"Device {self.device_id:02d} - Time: {timestamp} - Latitude: {latitude} - Longitude: {longitude}"
+            message = f"Device {self.device_id} - Time: {timestamp} - Latitude: {latitude} - Longitude: {longitude}"
             print(message)
             self.send_to_server(message)
             time.sleep(random.randint(self.MIN_SLEEP_SECONDS, self.MAX_SLEEP_SECONDS))
@@ -42,16 +42,16 @@ class IoTDeviceSimulator:
                 sock.connect((self.TCP_IP, self.TCP_PORT))
                 sock.sendall(message.encode('utf-8'))
             except socket.timeout:
-                print(f"Device {self.device_id:02d} - Server timeout.")
+                print(f"Device {self.device_id} - Server timeout.")
             except ConnectionRefusedError:
-                print(f"Device {self.device_id:02d} - Server connection refused.")
+                print(f"Device {self.device_id} - Server connection refused.")
             except Exception as e:
                 print(f"Device {self.device_id:02d} - An error occurred: {e}")
 
 def start_simulation(device_count):
     """Start the simulation for a given number of devices."""
     threads = []
-    for device_id in range(device_count):
+    for device_id in range(1, device_count + 1):  # Başlangıç değeri 1, bitiş değeri device_count + 1
         device_simulator = IoTDeviceSimulator(device_id)
         thread = threading.Thread(target=device_simulator.simulate)
         thread.daemon = True

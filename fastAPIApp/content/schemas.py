@@ -1,46 +1,17 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
 from datetime import datetime
 
-class DeviceBase(BaseModel):
-    name: str
+class LocationDataBase(BaseModel):
+    device: int = Field(..., description="The ID of the device")
+    latitude: float = Field(..., description="Latitude of the location")
+    longitude: float = Field(..., description="Longitude of the location")
+ 
+class LocationDataCreate(LocationDataBase):
+    time: datetime = Field(None, description="Time when the location data was recorded")
 
-class DeviceCreate(DeviceBase):
-    pass
-
-class Device(DeviceBase):
-    id: int
-    locations: List['Location'] = []
-
-    class Config:
-        orm_mode = True
-
-class LocationData(BaseModel):
-    latitude: float
-    longitude: float
-
-# class LocationBase(BaseModel):
-#     timestamp: datetime = Field(..., alias='time')
-#     location: LocationData
-
-class LocationBase(BaseModel):
-    timestamp: datetime = Field(..., alias='time')
-    location: Optional[LocationData] = None
-
-class LocationCreate(LocationBase):
-    device_id: int
-    # This class Config is necessary for Pydantic to handle the alias 'time'
-    class Config:
-        allow_population_by_field_name = True
-
-class Location(LocationBase):
-    id: int
-    location: LocationData
-    time: datetime
-    device_id: int
+class LocationDataRead(LocationDataBase):
+    id: int = Field(..., description="Unique ID of the location data")
+    time: datetime = Field(..., description="Time when the location data was recorded")
 
     class Config:
         orm_mode = True
-        allow_population_by_field_name = True
-
-Device.update_forward_refs()

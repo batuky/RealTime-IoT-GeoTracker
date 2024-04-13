@@ -11,7 +11,7 @@ class TCPServer:
 
     # Regex pattern to validate data
     MESSAGE_PATTERN = re.compile(
-        r"Device (\d{2}) - Time: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - Latitude: (-?\d+\.\d+) - Longitude: (-?\d+\.\d+)"
+        r"Device (\d) - Time: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - Latitude: (-?\d+\.\d+) - Longitude: (-?\d+\.\d+)"
     )
 
     def __init__(self):

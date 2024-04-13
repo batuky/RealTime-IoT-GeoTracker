@@ -1,92 +1,58 @@
-import logging
-from typing import List, Dict, Any
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .. import models, schemas 
-from ..database import SessionLocal
-
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("uvicorn.info")
+from .crud import LocationDataManager
+from .. import schemas, database
 
 router = APIRouter()
 
-def get_db():
-    
-    try:
-        db = SessionLocal()
-        yield db
-    except Exception as e:
-        print(e)
-    else:
-        print("success")    
-    finally:
-        db.close()
-        logger.info("Database connection closed")
+class LocationDataController:
+    def __init__(self, db: Session):
+        self.manager = LocationDataManager(db)
 
+    def read_location_data(self, location_data_id: int):
+        location_data = self.manager.get_location_data(location_data_id)
+        if location_data is None:
+            raise HTTPException(status_code=404, detail="Location data not found")
+        return location_data
 
-@router.post("/iot_data/", response_model=schemas.Location)
-def create_iot_data(location_create:schemas.LocationCreate, db: Session = Depends(get_db)):
-    # Extract the nested 'location' data
-    location_data = location_create.dict(by_alias=True)
-    nested_location = location_data.pop('location', {})  # Remove 'location' and get its value
-    print(location_data)
-    # Merge the nested 'location' data with the top-level data
-    flat_data = {**location_data, **nested_location}
+    def read_location_datas(self, skip: int = 0, limit: int = 100):
+        return self.manager.get_location_data_list(skip=skip, limit=limit)
 
-    # Now flat_data has a flat structure suitable for models.Location
-    db_location = models.Location(**flat_data)
-    print(db_location)
-    db.add(db_location)
-    db.commit()
-    db.refresh(db_location)
-    logger.info(f"New IoT data created with ID: {db_location.id}")
-    location_response = {
-        'id': db_location.id,
-        'device_id': db_location.device_id,
-        # 'timestamp' field is expected, and it corresponds to the 'time' field in the ORM model
-        'time': db_location.time,
-        # The 'location' is directly taken from the nested LocationData instance
-        'location': {
-            'latitude': db_location.latitude,
-            'longitude': db_location.longitude,
-        },
-        # The 'time' field is not necessary here as it is an alias for 'timestamp' in the LocationBase schema
-    }
-    return schemas.LocationCreate(**location_response)
+    def create_location_data(self, location_data: schemas.LocationDataCreate):
+        return self.manager.create_location_data(location_data)
 
+    def update_location_data(self, location_data_id: int, location_data: schemas.LocationDataCreate):
+        updated_data = self.manager.update_location_data(location_data_id, location_data)
+        if updated_data is None:
+            raise HTTPException(status_code=404, detail="Location data not found")
+        return updated_data
 
+    def delete_location_data(self, location_data_id: int):
+        if not self.manager.delete_location_data(location_data_id):
+            raise HTTPException(status_code=404, detail="Location data not found")
+        return {"ok": True}
 
-@router.get("/iot_data/", response_model=List[schemas.Location])
-def read_all_iot_data(db: Session = Depends(get_db)):
-    locations = db.query(models.Location).all()
-    logger.info("All IoT data read")
-    return locations
+@router.get("/location-data/{location_data_id}", response_model=schemas.LocationDataRead)
+def read_location_data(location_data_id: int, db: Session = Depends(database.get_db)):
+    controller = LocationDataController(db)
+    return controller.read_location_data(location_data_id)
 
-@router.get("/iot_data/{iot_data_id}", response_model=schemas.Location)
-def read_iot_data(iot_data_id: int, db: Session = Depends(get_db)):
-    db_location = db.query(models.Location).filter(models.Location.id == iot_data_id).first()
-    if db_location is None:
-        logger.warning(f"Location with ID {iot_data_id} not found")
-        raise HTTPException(status_code=404, detail="Location not found")
-    logger.info(f"Data for location ID {iot_data_id} retrieved")
-    return db_location
+@router.get("/location-datas/", response_model=list[schemas.LocationDataRead])
+def read_location_datas(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+    controller = LocationDataController(db)
+    return controller.read_location_datas(skip=skip, limit=limit)
 
-@router.delete("/iot_data/{iot_data_id}", response_model=schemas.Location)
-def delete_iot_data(iot_data_id: int, db: Session = Depends(get_db)):
-    db_location = db.query(models.Location).filter(models.Location.id == iot_data_id).first()
-    if db_location is None:
-        raise HTTPException(status_code=404, detail="Location not found")
-    db.delete(db_location)
-    db.commit()
-    logger.info(f"Location with ID {iot_data_id} deleted")
-    return db_location
+@router.post("/location-data/", response_model=schemas.LocationDataRead)
+def create_location_data(location_data: schemas.LocationDataCreate, db: Session = Depends(database.get_db)):
+    controller = LocationDataController(db)
+    return controller.create_location_data(location_data)
 
-@router.get("/iot_location_history/{device_id}", response_model=List[schemas.Location])
-def read_device_location_history(device_id: int, db: Session = Depends(get_db)):
-    db_device = db.query(models.Device).filter(models.Device.id == device_id).first()
-    if db_device is None:
-        logger.warning(f"Device with ID {device_id} not found")
-        raise HTTPException(status_code=404, detail="Device not found")
-    logger.info(f"Location history for device ID {device_id} retrieved")
-    return db_device.locations
+@router.put("/location-data/{location_data_id}", response_model=schemas.LocationDataRead)
+def update_location_data(location_data_id: int, location_data: schemas.LocationDataCreate, db: Session = Depends(database.get_db)):
+    controller = LocationDataController(db)
+    return controller.update_location_data(location_data_id, location_data)
+
+@router.delete("/location-data/{location_data_id}", status_code=204)
+def delete_location_data(location_data_id: int, db: Session = Depends(database.get_db)):
+    controller = LocationDataController(db)
+    return controller.delete_location_data(location_data_id)

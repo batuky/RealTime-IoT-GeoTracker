@@ -10,7 +10,7 @@ class QueueManager:
         self.rabbitmq_url = rabbitmq_url
         self.connect()
         self.valid_pattern = re.compile(
-            r"Device (\d{2}) - Time: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - Latitude: (-?\d+\.\d+) - Longitude: (-?\d+\.\d+)"
+            r"Device (\d) - Time: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - Latitude: (-?\d+\.\d+) - Longitude: (-?\d+\.\d+)"
         )
 
     def is_valid_message(self, message):

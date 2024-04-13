@@ -4,9 +4,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
 from .models import Base
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:bbhrpSdpVfHRtHJOtVabefQENsuaGUhj@monorail.proxy.rlwy.net:49189/railway"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:admin@127.0.0.1/postgres"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class DatabaseSessionManager:
