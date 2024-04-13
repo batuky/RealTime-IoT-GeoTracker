@@ -29,7 +29,7 @@ class IoTDeviceSimulator:
         while True:
             latitude, longitude = self.generate_random_location()
             timestamp = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())
-            message = f"Device {self.device_id:02d} - Time: {timestamp}, Location: ({latitude:.6f}, {longitude:.6f})"
+            message = f"Device {self.device_id:02d} - Time: {timestamp} - Latitude: {latitude} - Longitude: {longitude}"
             print(message)
             self.send_to_server(message)
             time.sleep(random.randint(self.MIN_SLEEP_SECONDS, self.MAX_SLEEP_SECONDS))
@@ -37,7 +37,7 @@ class IoTDeviceSimulator:
     def send_to_server(self, message):
         """Send data to the TCP server with a timeout."""
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.settimeout(10)  # 10 saniyelik bir timeout belirleyin
+            sock.settimeout(10)
             try:
                 sock.connect((self.TCP_IP, self.TCP_PORT))
                 sock.sendall(message.encode('utf-8'))

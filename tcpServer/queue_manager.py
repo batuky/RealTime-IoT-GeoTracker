@@ -1,5 +1,6 @@
 import pika
 from pika.exceptions import AMQPConnectionError, ChannelError
+import re
 
 class QueueManager:
     def __init__(self, rabbitmq_url, queue_name='iot_location_queue'):
@@ -8,6 +9,13 @@ class QueueManager:
         self.channel = None
         self.rabbitmq_url = rabbitmq_url
         self.connect()
+        self.valid_pattern = re.compile(
+            r"Device (\d{2}) - Time: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) - Latitude: (-?\d+\.\d+) - Longitude: (-?\d+\.\d+)"
+        )
+
+    def is_valid_message(self, message):
+        """Validate the format of the incoming message against the predefined pattern."""
+        return self.valid_pattern.fullmatch(message) is not None
 
     def connect(self):
         try:
@@ -22,27 +30,27 @@ class QueueManager:
             raise
 
     def send_message(self, message):
-        if self.channel is None:
-            print("Channel is not available. Attempting to reconnect...")
-            self.connect()
+        if self.is_valid_message(message):
+            if self.channel is None:
+                print("Channel is not available. Attempting to reconnect...")
+                self.connect()
 
-        # After attempting to reconnect, if self.channel is still None, raise an exception.
-        if self.channel is None:
-            raise Exception("Could not establish a channel to RabbitMQ.")
+            if self.channel is None:
+                raise Exception("Could not establish a channel to RabbitMQ.")
 
-        try:
-            self.channel.basic_publish(
-                exchange='',
-                routing_key=self.queue_name,
-                body=message
-            )
-            print(f"Message sent to queue '{self.queue_name}': {message}")
-        except (ChannelError, AMQPConnectionError) as error:
-            print(f"Failed to send message: {error}")
-            # If an error occurs at this point, it might be a good idea to set self.channel to None
-            # and handle reconnection attempts the next time send_message is called.
-            self.channel = None
-            raise
+            try:
+                self.channel.basic_publish(
+                    exchange='',
+                    routing_key=self.queue_name,
+                    body=message
+                )
+                print(f"Message sent to queue '{self.queue_name}': {message}")
+            except (ChannelError, AMQPConnectionError) as error:
+                print(f"Failed to send message: {error}")
+                self.channel = None
+                raise
+        else:
+            print(f"Invalid message format, not sent: {message}")
 
     def close(self):
         if self.channel and self.channel.is_open:
