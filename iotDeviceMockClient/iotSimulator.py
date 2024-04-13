@@ -46,7 +46,7 @@ class IoTDeviceSimulator:
             except ConnectionRefusedError:
                 print(f"Device {self.device_id} - Server connection refused.")
             except Exception as e:
-                print(f"Device {self.device_id:02d} - An error occurred: {e}")
+                print(f"Device {self.device_id} - An error occurred: {e}")
 
 def start_simulation(device_count):
     """Start the simulation for a given number of devices."""
