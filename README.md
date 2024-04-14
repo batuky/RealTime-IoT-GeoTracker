@@ -4,13 +4,13 @@ evreka-iot-gps is an application designed to solve a case study. The app generat
 
 ## Features
 
--IoT Device Simulation: Generates random location data from your specified number of simulated IoT devices. Generates random location data from simulated IoT devices.
--Logging: Comprehensive logging of activities and errors for troubleshooting and monitoring purposes.
--TCP Server for Data Collection: Collects location data from IoT devices using TCP.
--Data Validation: Validates data on the server to ensure its integrity and consistency.
--Queue System: Uses a message queue before writing incoming data to the database.
--CRUD Operations via RESTful API: Performs crud operations on consumed data using RESTful API.
--Testing: Comes with examples of tests of the service.
+- IoT Device Simulation: Generates random location data from your specified number of simulated IoT devices. Generates random location data from simulated IoT devices.
+- Logging: Comprehensive logging of activities and errors for troubleshooting and monitoring purposes.
+- TCP Server for Data Collection: Collects location data from IoT devices using TCP.
+- Data Validation: Validates data on the server to ensure its integrity and consistency.
+- Queue System: Uses a message queue before writing incoming data to the database.
+- CRUD Operations via RESTful API: Performs crud operations on consumed data using RESTful API.
+- Testing: Comes with examples of tests of the service.
 
 
 ## Getting Started
@@ -74,12 +74,12 @@ evreka-iot-gps is an application designed to solve a case study. The app generat
 
 ### API endpoints
 
-   POST/locations-data/: Create a new data.
-   GET/locations-data/: List all datas.
-   GET/locations-data/{location_data_id}: Get a specific location.
-   GET/devices/{device_id}/locations: Get locations history of a specific device.
-   PUT/locations-data/{location_data_id}: Update a specific data.
-   DELETE/locations-data/{location_data_id}: Delete a a specific data.
+   - POST/locations-data/: Create a new data.
+   - GET/locations-data/: List all datas.
+   - GET/locations-data/{location_data_id}: Get a specific location.
+   - GET/devices/{device_id}/locations: Get locations history of a specific device.
+   - PUT/locations-data/{location_data_id}: Update a specific data.
+   - DELETE/locations-data/{location_data_id}: Delete a a specific data.
 
 
 ### Architecture
