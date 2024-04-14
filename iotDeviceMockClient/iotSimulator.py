@@ -2,9 +2,14 @@ import threading
 import time
 import random
 import socket
+import os
+
+from dotenv import load_dotenv
 
 class IoTDeviceSimulator:
     # Constants
+    load_dotenv()
+
     DEVICE_COUNT = 2
     MIN_LATITUDE = -90.0
     MAX_LATITUDE = 90.0
@@ -12,7 +17,7 @@ class IoTDeviceSimulator:
     MAX_LONGITUDE = 180.0
     MIN_SLEEP_SECONDS = 3
     MAX_SLEEP_SECONDS = 6
-    TCP_IP = '127.0.0.1'
+    TCP_IP = os.getenv("TCP_IP")
     TCP_PORT = 5005
 
     def __init__(self, device_id):

@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
 from datetime import datetime
+
+from pydantic import BaseModel, Field
+
 
 class LocationDataBase(BaseModel):
     device: int = Field(..., description="The ID of the device")

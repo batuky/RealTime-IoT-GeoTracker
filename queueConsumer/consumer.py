@@ -1,9 +1,11 @@
-import logging
-import re
-import requests
 import json
+import logging
+import os
+import re
+
+from dotenv import load_dotenv
 import pika
-import time
+import requests
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("consumer_logger")
@@ -71,9 +73,10 @@ class RabbitMQConsumer:
         }
 
 if __name__ == "__main__":
-    queue_name = 'iot_location_queue'
-    rabbitmq_url = 'amqp://guest:guest@127.0.0.1:5672/%2F'
-    fastapi_url = 'http://127.0.0.1:8000/locations-data/'
+    load_dotenv()
+    queue_name = os.getenv("queue_name")
+    rabbitmq_url = os.getenv("rabbitmq_url")
+    fastapi_url = os.getenv("fastapi_url")
 
     consumer = RabbitMQConsumer(queue_name, rabbitmq_url, fastapi_url)
     consumer.consume_message()

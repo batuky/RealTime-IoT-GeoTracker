@@ -1,6 +1,9 @@
+import os
+import re
+
+from dotenv import load_dotenv
 import pika
 from pika.exceptions import AMQPConnectionError, ChannelError
-import re
 
 class QueueManager:
     def __init__(self, rabbitmq_url, queue_name='iot_location_queue'):
@@ -60,7 +63,8 @@ class QueueManager:
         print("RabbitMQ connection closed.")
 
 if __name__ == "__main__":
-    rabbitmq_url = r'amqp://guest:guest@127.0.0.1:5672/%2F'
+    load_dotenv()
+    rabbitmq_url = os.getenv("rabbitmq_url")
     queue_manager = QueueManager(rabbitmq_url)
 
     try:

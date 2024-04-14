@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session
+
 from .models import Base
 
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:admin@127.0.0.1/postgres"

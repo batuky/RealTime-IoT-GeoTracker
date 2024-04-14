@@ -1,11 +1,17 @@
+import os
+import re
 import socket
 import threading
-import re
+
+from dotenv import load_dotenv
+
 from queue_manager import QueueManager
 
 class TCPServer:
     # TCP Server Settings
-    TCP_IP = '127.0.0.1'
+    load_dotenv()
+    
+    TCP_IP = os.getenv("TCP_IP")
     TCP_PORT = 5005
     BUFFER_SIZE = 1024  # Maximum amount of data to be received
 

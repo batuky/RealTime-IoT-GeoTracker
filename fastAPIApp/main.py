@@ -1,9 +1,10 @@
 import logging
-from fastapi import FastAPI, Request
-from .content.database import init_db, close_db
-from .content.api import routes
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+
+from .content.api import routes
+from .content.database import init_db, close_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn")

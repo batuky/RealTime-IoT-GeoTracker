@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
+from .. import database, schemas
 from .crud import LocationDataManager
-from .. import schemas, database
 
 router = APIRouter()
 
