@@ -35,3 +35,6 @@ class LocationDataManager:
             self.db.commit()
             return True
         return False
+    
+    def get_device_location_history(self, device_id: int, skip: int = 0, limit: int = 100):
+        return self.db.query(models.LocationData).filter(models.LocationData.device == device_id).offset(skip).limit(limit).all()

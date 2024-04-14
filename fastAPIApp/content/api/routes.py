@@ -32,6 +32,12 @@ class LocationDataController:
         if not self.manager.delete_location_data(location_data_id):
             raise HTTPException(status_code=404, detail="Location data not found")
         return {"ok": True}
+    
+    def read_device_location_history(self, device_id: int, skip: int = 0, limit: int = 100):
+        location_history = self.manager.get_device_location_history(device_id, skip, limit)
+        if location_history is None or len(location_history) == 0:
+            raise HTTPException(status_code=404, detail="No location data found for the device")
+        return location_history
 
 @router.get("/locations-data/{location_data_id}", response_model=schemas.LocationDataRead)
 def read_location_data(location_data_id: int, db: Session = Depends(database.get_db)):
@@ -57,3 +63,8 @@ def update_location_data(location_data_id: int, location_data: schemas.LocationD
 def delete_location_data(location_data_id: int, db: Session = Depends(database.get_db)):
     controller = LocationDataController(db)
     return controller.delete_location_data(location_data_id)
+
+@router.get("/devices/{device_id}/locations", response_model=list[schemas.LocationDataRead])
+def read_device_location_history(device_id: int, skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
+    controller = LocationDataController(db)
+    return controller.read_device_location_history(device_id, skip, limit)
