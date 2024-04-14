@@ -8,7 +8,7 @@ class LocationDataManager:
     def get_location_data(self, location_data_id: int):
         return self.db.query(models.LocationData).filter(models.LocationData.id == location_data_id).first()
 
-    def get_location_data_list(self, skip: int = 0, limit: int = 100):
+    def get_locations_data_list(self, skip: int = 0, limit: int = 100):
         return self.db.query(models.LocationData).offset(skip).limit(limit).all()
 
     def create_location_data(self, location_data: schemas.LocationDataCreate):

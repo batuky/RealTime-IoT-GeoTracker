@@ -16,7 +16,7 @@ class LocationDataController:
         return location_data
 
     def read_location_datas(self, skip: int = 0, limit: int = 100):
-        return self.manager.get_location_data_list(skip=skip, limit=limit)
+        return self.manager.get_locations_data_list(skip=skip, limit=limit)
 
     def create_location_data(self, location_data: schemas.LocationDataCreate):
         return self.manager.create_location_data(location_data)
@@ -32,27 +32,27 @@ class LocationDataController:
             raise HTTPException(status_code=404, detail="Location data not found")
         return {"ok": True}
 
-@router.get("/location-data/{location_data_id}", response_model=schemas.LocationDataRead)
+@router.get("/locations-data/{location_data_id}", response_model=schemas.LocationDataRead)
 def read_location_data(location_data_id: int, db: Session = Depends(database.get_db)):
     controller = LocationDataController(db)
     return controller.read_location_data(location_data_id)
 
-@router.get("/location-datas/", response_model=list[schemas.LocationDataRead])
+@router.get("/locations-data/", response_model=list[schemas.LocationDataRead])
 def read_location_datas(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)):
     controller = LocationDataController(db)
     return controller.read_location_datas(skip=skip, limit=limit)
 
-@router.post("/location-data/", response_model=schemas.LocationDataRead)
+@router.post("/locations-data/", response_model=schemas.LocationDataRead)
 def create_location_data(location_data: schemas.LocationDataCreate, db: Session = Depends(database.get_db)):
     controller = LocationDataController(db)
     return controller.create_location_data(location_data)
 
-@router.put("/location-data/{location_data_id}", response_model=schemas.LocationDataRead)
+@router.put("/locations-data/{location_data_id}", response_model=schemas.LocationDataRead)
 def update_location_data(location_data_id: int, location_data: schemas.LocationDataCreate, db: Session = Depends(database.get_db)):
     controller = LocationDataController(db)
     return controller.update_location_data(location_data_id, location_data)
 
-@router.delete("/location-data/{location_data_id}", status_code=204)
+@router.delete("/locations-data/{location_data_id}", status_code=204)
 def delete_location_data(location_data_id: int, db: Session = Depends(database.get_db)):
     controller = LocationDataController(db)
     return controller.delete_location_data(location_data_id)

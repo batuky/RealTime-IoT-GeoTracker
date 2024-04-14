@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class LocationData(Base):
-    __tablename__ = "location_data"
+    __tablename__ = "locations_data"
 
     id = Column(Integer, primary_key=True, index=True)
     device = Column(Integer, nullable=False)
