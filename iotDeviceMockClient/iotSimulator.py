@@ -51,7 +51,7 @@ class IoTDeviceSimulator:
 def start_simulation(device_count):
     """Start the simulation for a given number of devices."""
     threads = []
-    for device_id in range(1, device_count + 1):  # Başlangıç değeri 1, bitiş değeri device_count + 1
+    for device_id in range(1, device_count + 1):
         device_simulator = IoTDeviceSimulator(device_id)
         thread = threading.Thread(target=device_simulator.simulate)
         thread.daemon = True
