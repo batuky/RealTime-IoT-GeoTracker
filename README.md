@@ -1,6 +1,6 @@
-# evreka-iot-gps
+# RealTime-IoT-GeoTracker
 
-evreka-iot-gps is an application designed to solve a case study. The app generates random locations data from the simulated IoT devices, depending on how many IoT devices you want. The data is sent to a TCP server, where it is validated. The validated data is then sent to a queue, where it is consumed by a consumer. Finally, CRUD operations are performed on the consumed data using FASTAPI.
+RealTime-IoT-GeoTracker is an application designed to solve a case study. The app generates random locations data from the simulated IoT devices, depending on how many IoT devices you want. The data is sent to a TCP server, where it is validated. The validated data is then sent to a queue, where it is consumed by a consumer. Finally, CRUD operations are performed on the consumed data using FASTAPI.
 
 ## Features
 
