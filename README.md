@@ -26,7 +26,7 @@ RealTime-IoT-GeoTracker is an application designed to manage location data from 
 ### Installation
 1. Clon the repository.
    ```sh
-   git https://github.com/batuky/evreka-iot-gps.git
+   git clone https://github.com/batuky/RealTime-IoT-GeoTracker.git
    ```
 
 2. Create env variables. You can see variables and example values on the example.
